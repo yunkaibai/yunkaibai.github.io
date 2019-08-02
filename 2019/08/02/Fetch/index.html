@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="取指单元1. 取指单元介绍取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &amp;gt; br &amp;gt; BPD &amp;gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。  2. fetch unit结构fe">
+<meta name="description" content="取指单元1. 取指单元介绍取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &amp;gt; br &amp;gt; BPD &amp;gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。">
 <meta name="keywords" content="RISC-V,BOOM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fetch">
 <meta property="og:url" content="http://yunkaibai.github.io/2019/08/02/Fetch/index.html">
 <meta property="og:site_name" content="Profile">
-<meta property="og:description" content="取指单元1. 取指单元介绍取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &amp;gt; br &amp;gt; BPD &amp;gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。  2. fetch unit结构fe">
+<meta property="og:description" content="取指单元1. 取指单元介绍取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &amp;gt; br &amp;gt; BPD &amp;gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="c:/Users/Administrator/AppData/Roaming/Typora/typora-user-images/1564361731717.png">
-<meta property="og:updated_time" content="2019-08-02T01:32:17.993Z">
+<meta property="og:updated_time" content="2019-08-02T01:49:47.389Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fetch">
-<meta name="twitter:description" content="取指单元1. 取指单元介绍取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &amp;gt; br &amp;gt; BPD &amp;gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。  2. fetch unit结构fe">
+<meta name="twitter:description" content="取指单元1. 取指单元介绍取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &amp;gt; br &amp;gt; BPD &amp;gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。">
 <meta name="twitter:image" content="c:/Users/Administrator/AppData/Roaming/Typora/typora-user-images/1564361731717.png">
 
 
@@ -355,6 +355,7 @@
 
       
         <h1 id="取指单元"><a href="#取指单元" class="headerlink" title="取指单元"></a>取指单元</h1><h2 id="1-取指单元介绍"><a href="#1-取指单元介绍" class="headerlink" title="1. 取指单元介绍"></a>1. 取指单元介绍</h2><p>取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &gt; br &gt; BPD &gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。</p>
+<a id="more"></a>
 <p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1564361731717.png" alt="1564361731717"></p>
 <h2 id="2-fetch-unit结构"><a href="#2-fetch-unit结构" class="headerlink" title="2. fetch unit结构"></a>2. fetch unit结构</h2><p>fetch unit 主要由三部分构成：预译码单元、分支检查单元、Fetch Buffer。fetch unit与ICache、分支执行单元、分支预测单元、译码单元、rename单元、ROB相连。</p>
 <table>

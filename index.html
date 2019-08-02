@@ -354,130 +354,14 @@
 
       
         
-          
-            <h1 id="取指单元"><a href="#取指单元" class="headerlink" title="取指单元"></a>取指单元</h1><h2 id="1-取指单元介绍"><a href="#1-取指单元介绍" class="headerlink" title="1. 取指单元介绍"></a>1. 取指单元介绍</h2><p>取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &gt; br &gt; BPD &gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。</p>
-<p><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1564361731717.png" alt="1564361731717"></p>
-<h2 id="2-fetch-unit结构"><a href="#2-fetch-unit结构" class="headerlink" title="2. fetch unit结构"></a>2. fetch unit结构</h2><p>fetch unit 主要由三部分构成：预译码单元、分支检查单元、Fetch Buffer。fetch unit与ICache、分支执行单元、分支预测单元、译码单元、rename单元、ROB相连。</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>方向</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>imem</td>
-<td>inout</td>
-<td>fetch通过imem发送npc请求到ICache，取回指令码</td>
-</tr>
-<tr>
-<td>f0_btb</td>
-<td>in</td>
-<td>btb的response信号</td>
-</tr>
-<tr>
-<td>f2_bpu_request</td>
-<td>in</td>
-<td>btb和bpd预测结果不一致时，分支预测单元的返回信号</td>
-</tr>
-<tr>
-<td>f2_btb_resp</td>
-<td>in</td>
-<td>f2阶段btb的resp信号</td>
-</tr>
-<tr>
-<td>f2_bpd_resp</td>
-<td>in</td>
-<td>f2阶段bpd的resp信号</td>
-</tr>
-<tr>
-<td>f2_ras_update</td>
-<td>out</td>
-<td>f2阶段ras的resp信号</td>
-</tr>
-<tr>
-<td>f3_bpd_resp</td>
-<td>in</td>
-<td>f3阶段bpd的resp信号</td>
-</tr>
-<tr>
-<td>f3_btb_update</td>
-<td>out</td>
-<td>f3阶段更新btb的信号</td>
-</tr>
-<tr>
-<td>f3_hist_update</td>
-<td>out</td>
-<td>f3</td>
-</tr>
-<tr>
-<td>f3_bim_update</td>
-<td>out</td>
-<td>f3阶段更新bim的信号</td>
-</tr>
-<tr>
-<td>br_unit</td>
-<td>in</td>
-<td>来自分支执行单元的返回信号</td>
-</tr>
-<tr>
-<td>clear_fetchbuffer</td>
-<td>in</td>
-<td>清空fetch buffer的信号</td>
-</tr>
-<tr>
-<td>flush_take_pc</td>
-<td>in</td>
-<td>用于重定向PC的使能信号</td>
-</tr>
-<tr>
-<td>flush_pc</td>
-<td>in</td>
-<td>重定向的PC值</td>
-</tr>
-<tr>
-<td>resp</td>
-<td>inout</td>
-<td>输出fetch buffer的信号</td>
-</tr>
-<tr>
-<td>stalled</td>
-<td>out</td>
-<td>暂停取指的信号</td>
-</tr>
-<tr>
-<td>tsc_reg</td>
-<td>reg</td>
-<td>用于dubug的时间戳信号</td>
-</tr>
-</tbody>
-</table>
-<p>2.1 fetch unit顶层</p>
-<p>fetch unit顶层主要是根据分支预测信息和冲刷流水线信息计算npc，产生NPC请求给ICache，进行取指。</p>
-<p>2.2 预译码单元</p>
-<p>该单元的主要作用是对指令的操作码进行简单的译码，确定该指令是否属于分支、JAL、JALR中的一种。耗时一拍</p>
-<p>2.3 分支检查单元</p>
-<p>该单元的主要作用是检查BTB预测结果是否正确以及BTB是否未命中，当btb预测错误或者未命中时，重定向前端并更新btb，如果该指令是call指令，则更新ras。耗时一拍</p>
-<p>2.4 fetch buffer</p>
-<p>该单元的主要作用是对f3阶段的fetch bundle进行缓冲，size为8。</p>
-<h2 id="3-fetch-unit"><a href="#3-fetch-unit" class="headerlink" title="3. fetch unit"></a>3. fetch unit</h2><p>f0阶段主要是计算和重定向npc，发送npc请求到ICache。一般情况下，当fetch buffer未满时，npc 为上一条指令加上4*fetch_width。需要重定向npc的情况按照优先级从高到低主要有4种：</p>
-<p>（1）冲刷流水线</p>
-<p>重定向npc为rob提供的flush_pc</p>
-<p>（2）分支预测错误</p>
-<p>重定向npc为分支执行单元提供的分支目标target</p>
-<p>（3）BPD重定向前端</p>
-<p>BPD和BTB预测结果不一致或btb预测jal指令错误或bpd重定向前端时，重定向npc为branch checker提供的地址或bpd预测结果。</p>
-<p>（4）BTB命中</p>
-<p>重定向npc为btb预测结果中的target</p>
-<p>f1阶段主要是ICache响应NPC请求，读取指令到ICache中。</p>
-<p>f2阶段接收ICache返回的指令包并进行预译码，判断指令类型以及计算分支和跳转目标。f2中判断BPD是否对分支指令进行了预测，并计算分支目标PC。当BTB和BPD同时进行预测并且均预测分支指令跳转则当bpd的br_idx小于btb_idx时bpd有可能对前端进行重定向，当BTB不进行预测时，bpd对前端进行重定向并对btb进行更新。branch checker在该阶段中检查到BTB未命中和预测错误的情况，当jal指令在其他控制转移指令之前时，杀掉后面的所有指令；当BTB预测错误时，如果该指令是JAL则重定向前端到JAL的跳转地址，如果该指令不是JAL则重定向前端到下条指令的PC值；当call指令预测错误或者未命中时，bchecker对ras进行更新。当jal未命中时准备btb和bim的更新信息，在f3阶段对btb和bim进行更新。该阶段中将有效信号、PC值、异常信号、分支预测信息放入取指包中，传递在f3阶段放入fetch buffer。</p>
-<p>f3阶段</p>
-<p>在该阶段中，fetch unit对bim、btb、hist进行更新，同时将取指包放入fetch buffer中，当fetchbuffer非空时立即将取指包response到decode单元</p>
-<p><em>注：a. 当取指目标PC被重定向后，ICache的 resp信号不再有效，直到取指到目标PC</em></p>
-
-          
+          <h1 id="取指单元"><a href="#取指单元" class="headerlink" title="取指单元"></a>取指单元</h1><h2 id="1-取指单元介绍"><a href="#1-取指单元介绍" class="headerlink" title="1. 取指单元介绍"></a>1. 取指单元介绍</h2><p>取指单元的主要功能是根据分支预测重定向PC（BTB、BPD）和后端重定向PC（rob flush、br_unit）计算NextPC（flush &gt; br &gt; BPD &gt; BTB），ICache中取回NPC指令包放入Fetch Buffer，输出给后端。ICache、分支预测BTB、BPD和取指单元构成的整体称为前端。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/08/02/Fetch/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
